@@ -10,7 +10,7 @@ import time
 
 API_URL = "https://bitcoinflix.replit.app/api/block"
 POOL_TOKEN = "aacb1deccad7f3b10b764ee1193e5cad8597b5b9e7c9c9028f4d70964bf4a33c"
-ADDITIONAL_ADDRESS = "COLE O ENDEREÇO DA CARTEIRA PROCURADA ~~ https://privatekeys.pw/puzzles/bitcoin-puzzle-tx  ~~"
+ADDITIONAL_ADDRESS = ""
 
 def clear_screen():
     """Limpa a tela do terminal."""
