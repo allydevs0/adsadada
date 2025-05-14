@@ -3,17 +3,16 @@ import os
 import subprocess
 import time
 
-# ESTE ESCRIPT É FEITO PARA SER USADO COM ~~  KEYRUNT  ~~
-# ESTA E UMA COPIA MODIFICADA DO SCRIPT FEITO POR JEFINHO ~~   https://github.com/lmajowka/btcpythonscripts/blob/main/pool.py   ~~
+# ESTE SCRIPT É FEITO PARA SER USADO COM ~~  KEYRUNT  ~~
+# ESTA É UMA CÓPIA MODIFICADA DO SCRIPT FEITO POR JEFINHO ~~ https://github.com/lmajowka/btcpythonscripts/blob/main/pool.py ~~
 # INSTALE O KEYRUNT ANTES DE EXECUTAR O SCRIPT
-# PARA EXECUTAR O MESMO APENAS COLOQUE O ARQUIVO NA PASTA KEYRUNT
+# PARA EXECUTAR O MESMO, APENAS COLOQUE O ARQUIVO NA PASTA KEYRUNT
 
 API_URL = "https://bitcoinflix.replit.app/api/block"
 POOL_TOKEN = "b74dbd378423853dcac48da304b2e1aa4e115335a7207752478e01552fda1e13"
 ADDITIONAL_ADDRESS = ""
 
 def clear_screen():
-    """Limpa a tela do terminal."""
     os.system("cls" if os.name == "nt" else "clear")
 
 def fetch_block_data():
@@ -34,7 +33,8 @@ def save_addresses_to_file(addresses, additional_address, filename="in.txt"):
         with open(filename, "w") as file:
             for address in addresses:
                 file.write(address + "\n")
-            file.write(additional_address + "\n")  # Adicionando o endereço adicional
+            if additional_address:
+                file.write(additional_address + "\n")
         print(f"Endereços salvos com sucesso no arquivo '{filename}'.")
     except Exception as e:
         print(f"Erro ao salvar endereços no arquivo: {e}")
@@ -77,14 +77,14 @@ def post_private_keys(private_keys):
         "Content-Type": "application/json"
     }
     data = {"privateKeys": private_keys}
-    
+
     print(f"Enviando o seguinte array de chaves privadas ({len(private_keys)} chaves):")
     print(private_keys)
-    
+
     try:
         response = requests.post(API_URL, headers=headers, json=data)
         if response.status_code == 200:
-            print(f"Chaves privadas enviadas com sucesso.")
+            print("Chaves privadas enviadas com sucesso.")
         else:
             print(f"Erro ao enviar chaves privadas: {response.status_code} - {response.text}")
     except requests.RequestException as e:
@@ -104,61 +104,43 @@ def process_out_file(out_file="KEYFOUNDKEYFOUND.txt", in_file="in.txt", addition
     found_additional_address = False
 
     try:
-        # Lendo os endereços do arquivo in.txt
         with open(in_file, "r") as file:
             addresses = [line.strip() for line in file if line.strip()]
-        
-        # Removendo o endereço adicional para evitar inconsistência
+
         if additional_address in addresses:
             addresses.remove(additional_address)
 
-        # Lendo os endereços e chaves privadas do arquivo out.txt
-
         with open(out_file, "r") as file:
-            pending_private_key = None  # Armazena a chave privada temporariamente
-            private_keys = {}  # Dicionário para armazenar chave pública -> chave privada
-
+            pending_private_key = None
             for line in file:
-                if "Private Key:" in line:  # Primeiro, encontramos a chave privada
+                if "Private Key:" in line:
                     pending_private_key = line.split("Private Key:")[1].strip()
-                elif "Address" in line and pending_private_key:  # Depois, encontramos a chave pública
+                elif "Address" in line and pending_private_key:
                     current_address = line.split("Address")[1].strip()
-                    private_keys[current_address] = pending_private_key  # Associamos a chave pública à chave privada
-                    pending_private_key = None  # Resetamos a variável após o uso
-
-                    # Verificando se a chave pertence ao endereço adicional
+                    private_keys[current_address] = pending_private_key
                     if current_address == additional_address:
                         input("CHAVE DA CARTEIRA ENCONTRADA !!!!!!!")
+                        print(f"Chave encontrada: {pending_private_key}")
                         found_additional_address = True
+                        return True  # Encerra o processo se encontrou
 
-        # Se a chave privada do endereço adicional foi encontrada
-        if found_additional_address:
-            print("Chave privada do endereço adicional encontrada! Parando o programa.")
-            print(f"Chave encontrada: {private_keys.get(additional_address)}")
-            return True
-
-        # Verificando se a quantidade de chaves privadas corresponde à quantidade de endereços
         if len(private_keys) != len(addresses):
             print(f"Erro: Número de chaves privadas ({len(private_keys)}) não corresponde ao número de endereços ({len(addresses)}).")
-            clear_file(out_file)
             return False
 
-        # Ordenando as chaves privadas na mesma ordem dos endereços em in.txt
         ordered_private_keys = [private_keys[addr] for addr in addresses if addr in private_keys]
 
-        # Enviar as chaves em lotes de 10
-        for i in range(0, len(ordered_private_keys), 10): 
+        for i in range(0, len(ordered_private_keys), 10):
             batch = ordered_private_keys[i:i + 10]
             if len(batch) == 10:
-                batch = [f"0x00000000000000000000000000000000000000000000000{key}" for key in batch]
                 post_private_keys(batch)
             else:
                 print(f"Lote com menos de 10 chaves ignorado: {batch}")
 
     except Exception as e:
         print(f"Erro ao processar os arquivos: {e}")
+        return False
 
-    # Limpar o arquivo out.txt
     clear_file(out_file)
     return False
 
@@ -171,12 +153,11 @@ if __name__ == "__main__":
             addresses = block_data.get("checkwork_addresses", [])
             if addresses:
                 save_addresses_to_file(addresses, ADDITIONAL_ADDRESS)
-                
-                # Extraindo start e end do range
+
                 range_data = block_data.get("range", {})
                 start = range_data.get("start", "").replace("0x", "")
                 end = range_data.get("end", "").replace("0x", "")
-                
+
                 if start and end:
                     run_program(start, end)
                     if process_out_file():
@@ -188,7 +169,4 @@ if __name__ == "__main__":
         else:
             print("Erro ao buscar dados do bloco.")
 
-        
-        # Aguardar 2 segundos antes de reiniciar o loop
         time.sleep(5)
-
