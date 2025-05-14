@@ -9,7 +9,7 @@ import time
 # PARA EXECUTAR O MESMO APENAS COLOQUE O ARQUIVO NA PASTA KEYRUNT
 
 API_URL = "https://bitcoinflix.replit.app/api/block"
-POOL_TOKEN = "aacb1deccad7f3b10b764ee1193e5cad8597b5b9e7c9c9028f4d70964bf4a33c"
+POOL_TOKEN = "b74dbd378423853dcac48da304b2e1aa4e115335a7207752478e01552fda1e13"
 ADDITIONAL_ADDRESS = ""
 
 def clear_screen():
