@@ -2018,7 +2018,7 @@ if not _G.SimpleSpyExecuted then
 			end
 		end
 		TextLabel:GetPropertyChangedSignal("Text"):Connect(scaleToolTip)
-		-- TopBar.InputBegan:Connect(onBarInput)
+		TopBar.InputBegan:Connect(onBarInput)
 		MinimizeButton.MouseButton1Click:Connect(toggleMinimize)
 		MaximizeButton.MouseButton1Click:Connect(toggleSideTray)
 		Simple.MouseButton1Click:Connect(onToggleButtonClick)
