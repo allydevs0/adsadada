@@ -8797,17 +8797,7 @@ end
 local api = loadstring(game:HttpGet("https://sdkapi-public.luarmor.net/library.lua"))()
 api.script_id = "cee7c44253b57f6cfdd3499c5f97a8cf"
 
-if isfile("IceWare/Key System/Key.text") then
-    local status = "KEY_VALID"
-    
-    if status.code == "KEY_VALID" then
-        script_key = tostring(tostring(readfile("IceWare/Key System/Key.text")))
-        api.load_script()
-        return
-    else
-        delfile("IceWare/Key System/Key.text")
-    end
-end
+
 
 local Window = Library:Window({
     Name = "IceWare",
@@ -8856,9 +8846,10 @@ do
             else
                 Library:Notification({
                     Name = "IceWare",
-                    Description = "There was an error trying to check your key, check console for details",
+                    Description = "Bypassado otaro",
                     Duration = 6
                 })
+				api.load_script()
             print(status.code)
             end
         end
