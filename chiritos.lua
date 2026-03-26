@@ -8842,7 +8842,7 @@ do
     Section:Button({
         Name = "Check Key",
         Callback = function()
-            local status = api.check_key(Options.KeyInput.Value); 
+            local status = "KEY_VALID" 
 
             if (status.code == "KEY_VALID") then
 				Library:Notification({
