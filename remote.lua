@@ -35,7 +35,7 @@ end
 getgenv().abss = _G.data['CursorOffset'] -- the offset of the cursor had to make a global var so i can calculate the exact position
 
 if _G.data['SaveDecompileLogs'] then
-	warn('?? - Saving decompile logs...')
+	warn('⚠️ - Saving decompile logs...')
 	local cur_time = tick()
 	for i,v in pairs(_G.data['PathToDump']) do
 		save_logs(v)
@@ -43,22 +43,22 @@ if _G.data['SaveDecompileLogs'] then
 	if game.Players.LocalPlayer.Character then
 	save_logs(game.Players.LocalPlayer.Character)
 	end
-	print('? - LocalScripts have been dumped! | time taken: ' .. tick() - cur_time .. ' seconds')
+	print('✅ - LocalScripts have been dumped! | time taken: ' .. tick() - cur_time .. ' seconds')
 end
-warn('?? - Initializing RemoteHook/main.lua')
+warn('⚠️ - Initializing RemoteHook/main.lua')
 loadstring(game:HttpGet('https://raw.githubusercontent.com/ScriptSkiddie69/RemoteHook/refs/heads/main/Installation.lua'))()
 local code = loadstring(readfile('RemoteHook//main.lua'))()
-warn('? - Initialized RemoteHook/main.lua')
+warn('✅ - Initialized RemoteHook/main.lua')
 
 if _G.data['SaveScanLogs'] then
-	warn('?? - Saving scan logs...')
+	warn('⚠️ - Saving scan logs...')
 	local cur_time = tick()
 	for _,scripts in ipairs(game:GetDescendants()) do
 		if scripts:IsA('LocalScript') then
 			writefile('SimpleSpyLite//ScanLogs//'.. game.PlaceId .. '//game.' .. scripts:GetFullName() .. '.txt', 'game.' .. scripts:GetFullName())
 		end
 	end
-	print('? - Scan logs has been saved! | time taken: ' .. tick() - cur_time .. ' seconds')
+	print('✅ - Scan logs has been saved! | time taken: ' .. tick() - cur_time .. ' seconds')
 end
 warn('Loading SimpleSpy v2.5 lite by osint boss')
 
@@ -69,6 +69,10 @@ local Highlight =
 	loadstring(
 		game:HttpGet("https://github.com/exxtremestuffs/SimpleSpySource/raw/master/highlight.lua")
 	)()
+
+---- GENERATED (kinda sorta mostly) BY GUI to LUA ----
+
+-- Instances:
 
 ---- GENERATED (kinda sorta mostly) BY GUI to LUA ----
 
@@ -425,7 +429,6 @@ local sideClosed = false
 local maximized = false
 --- The event logs to be read from
 local logs = {}
-local groupedRemotes = {}   -- key = nome..":"..tipo
 --- The event currently selected.Log (defaults to nil)
 local selected = nil
 --- The blacklist (can be a string name or the Remote Instance)
@@ -1231,26 +1234,26 @@ end
 
 --- Runs on MouseButton1Click of an event frame
 function eventSelect(frame)
-    if selected and selected.Log and selected.Log.Button then
-        TweenService:Create(selected.Log.Button, TweenInfo.new(0.3), { BackgroundColor3 = Color3.fromRGB(0,0,0) }):Play()
-    end
-    for _, v in pairs(logs) do
-        if frame == v.Log then
-            selected = v
-            break
-        end
-    end
-    if selected and selected.Log then
-        TweenService:Create(frame.Button, TweenInfo.new(0.3), { BackgroundColor3 = Color3.fromRGB(80, 70, 200) }):Play()
-        local header = "-- " .. selected.Name .. " (" .. selected.Type .. ") · disparado " .. selected.count .. " vezes\n"
-        if selected.lastFire then
-            header = header .. "-- Última chamada: " .. os.date("%H:%M:%S", selected.lastFire) .. "\n"
-        end
-        codebox:setRaw(header .. "\n" .. selected.GenScript)
-    end
-    if sideClosed then
-        toggleSideTray()
-    end
+	if selected and selected.Log and selected.Log.Button then
+		TweenService
+			:Create(selected.Log.Button, TweenInfo.new(0.5), { BackgroundColor3 = Color3.fromRGB(0, 0, 0) })
+			:Play()
+		selected = nil
+	end
+	for _, v in pairs(logs) do
+		if frame == v.Log then
+			selected = v
+		end
+	end
+	if selected and selected.Log then
+		TweenService
+			:Create(frame.Button, TweenInfo.new(0.5), { BackgroundColor3 = Color3.fromRGB(92, 126, 229) })
+			:Play()
+		codebox:setRaw(selected.GenScript)
+	end
+	if sideClosed then
+		toggleSideTray()
+	end
 end
 
 --- Updates the canvas size to fit the current amount of function buttons
@@ -1337,91 +1340,6 @@ end
 --- @param function_info string
 --- @param blocked any
 function newRemote(type, name, args, remote, function_info, blocked, src, returnValue)
-    local key = name .. ":" .. type
-    local now = tick()
-
-    if groupedRemotes[key] then
-        local entry = groupedRemotes[key]
-        entry.count = entry.count + 1
-        entry.lastFire = now
-        entry.args = args
-        entry.returnValue = returnValue
-
-        if entry.Log and entry.Log:FindFirstChild("CountLabel") then
-            entry.Log.CountLabel.Text = entry.count .. "x"
-        end
-        if entry.Log then
-            local originalBg = entry.Log.BackgroundColor3
-            entry.Log.BackgroundColor3 = Color3.fromRGB(100, 80, 220)
-            spawn(function()
-                wait(0.15)
-                if entry.Log then
-                    entry.Log.BackgroundColor3 = originalBg
-                end
-            end)
-        end
-        schedule(function()
-            if selected and selected.Name == name and selected.Type == type then
-                entry.GenScript = genScript(remote, args)
-                if blocked then
-                    entry.GenScript = "-- BLOQUEADO\n\n" .. entry.GenScript
-                end
-                if selected == entry then
-                    codebox:setRaw(entry.GenScript)
-                end
-            end
-        end)
-        return
-    end
-
-    local remoteFrame = RemoteTemplate:Clone()
-    remoteFrame.Text.Text = name
-    remoteFrame.ColorBar.BackgroundColor3 = (type == "event" and Color3.fromRGB(189,125,255))
-                                        or (type == "fn" and Color3.fromRGB(255,176,84))
-                                        or Color3.fromRGB(59,201,176)
-    local dir = (type == "event" or type == "fn") and "?" or "?"
-    remoteFrame.DirLabel.Text = dir
-    remoteFrame.DirLabel.TextColor3 = remoteFrame.ColorBar.BackgroundColor3
-    remoteFrame.CountLabel.Text = "1x"
-
-    local log = {
-        Name = name,
-        Type = type,
-        Remote = setmetatable({ remote = remote }, { __mode = "v" }),
-        Log = remoteFrame,
-        Blocked = blocked,
-        Source = src,
-        GenScript = genScript(remote, args),
-        ReturnValue = returnValue,
-        count = 1,
-        lastFire = now,
-        args = args,
-    }
-    if blocked then
-        log.GenScript = "-- BLOQUEADO\n\n" .. log.GenScript
-    end
-
-    logs[#logs + 1] = log
-    groupedRemotes[key] = log
-
-    remoteFrame.Button.MouseButton1Click:Connect(function()
-        eventSelect(remoteFrame)
-    end)
-
-    remoteFrame.LayoutOrder = 999999999 - #logs
-    remoteFrame.Parent = LogList
-    table.insert(remoteLogs, 1, { nil, remoteFrame })
-    clean()
-    updateRemoteCanvas()
-
-    remoteFrame.BackgroundTransparency = 0.5
-    spawn(function()
-        wait(0.05)
-        if remoteFrame then
-            remoteFrame.BackgroundTransparency = 0.2
-        end
-    end)
-end
 	local remoteFrame = RemoteTemplate:Clone()
 	remoteFrame.Text.Text = string.sub(name, 1, 50)
 	remoteFrame.ColorBar.BackgroundColor3 = type == "event" and Color3.new(255, 242, 0) or Color3.fromRGB(99, 86, 245)
@@ -2133,10 +2051,7 @@ function taskscheduler()
 end
 
 --- Handles remote logs
-function shutdown()
-    SimpleSpy2:Destroy()
-    _G.SimpleSpyExecuted = nil
-end
+
 -- main
 if not _G.SimpleSpyExecuted then
 	local succeeded, err = pcall(function()
@@ -2312,7 +2227,7 @@ end, function()
 		for _,v in ipairs(game.Players.LocalPlayer:GetDescendants()) do
             if v:IsA('LocalScript') then
                 local script = decompile(v)
-
+                
                 if code.traceline(script, selected.Name) then
                     warn('Traced a calling script! ' .. v:GetFullName())
 		setclipboard(script)
@@ -2323,7 +2238,7 @@ end, function()
         for _,v in ipairs(game.Players.LocalPlayer.Character:GetDescendants()) do
             if v:IsA('LocalScript') then
                 local script = decompile(v)
-
+                
                 if code.traceline(script, selected.Name) then
                     warn('Traced a calling script! ' .. v:GetFullName())
 		setclipboard(script)
@@ -2335,7 +2250,7 @@ end, function()
         --[[for _,v in ipairs(game.Players.LocalPlayer:GetDescendants()) do
             if v:IsA('LocalScript') then
                 local script = decompile(v)
-
+                
                 if code.traceline(script, selected.Remote.Name) then
                     warn('Traced a calling script! ' .. v:GetFullName())
 		setclipboard(script)
@@ -2346,7 +2261,7 @@ end, function()
         for _,v in ipairs(game.Players.LocalPlayer.Character:GetDescendants()) do
             if v:IsA('LocalScript') then
                 local script = decompile(v)
-
+                
                 if code.traceline(script, selected.Remote.Name) then
                     warn('Traced a calling script! ' .. v:GetFullName())
 		setclipboard(script)
@@ -2540,7 +2455,7 @@ end, function()
 end)
 
 
---// Hooks
+--// Hooks 
 warn('Defining RemoteHook...')
 warn('Setting up remote event listener...')
 for i,remote in ipairs(game:GetDescendants()) do
@@ -2555,7 +2470,7 @@ for i,remote in ipairs(game:GetDescendants()) do
             newRemote('event', rem.Name, value, rem, nil, false, "abc", false)
                 end
             end
-
+        
         })
     end
 end
@@ -2571,7 +2486,7 @@ game.DescendantAdded:Connect(function(remote)
             newRemote('event', rem.Name, value, rem, nil, false, "abc", false)
                 end
             end
-
+        
         })
     end
 end)
@@ -2584,7 +2499,7 @@ getgenv().http.request = function(...) -- intercept
     end
 	local _args = {
 		[1] = _spy,
-		[2] = [[http.request([1]) -- remove args and make [1] as a table ex: ( local response = {method = \"GET\"} ) and [2] http.request(response)]]
+		[2] = [[http.request([1]) -- remove args and make [1] as a table ex: ( local response = {method = \"GET\"} ) and [2] http.request(response)]] 
 	}
 	newRemote('function', 'req-log', _args, workspace, _spy, false, "abc", false)
 	_spy = {}
