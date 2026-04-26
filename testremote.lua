@@ -228,7 +228,33 @@ Button.AutoButtonColor = false
 Button.Text = ""
 
 -- (O restante do código RightPanel, TopBar etc. pode manter o original, mas opcionalmente aplique estética similar)
+-- RightPanel (área do código)
+local RightPanel = Instance.new("Frame")
+RightPanel.Name = "RightPanel"
+RightPanel.Parent = Background
+RightPanel.BackgroundColor3 = Color3.fromRGB(18, 18, 26)
+RightPanel.BackgroundTransparency = 0.3
+RightPanel.Position = UDim2.new(0, 160, 0, 32)
+RightPanel.Size = UDim2.new(1, -160, 1, -32)
 
+local CodeBox = Instance.new("Frame")
+CodeBox.Name = "CodeBox"
+CodeBox.Parent = RightPanel
+CodeBox.BackgroundColor3 = Color3.fromRGB(10, 10, 16)
+CodeBox.Size = UDim2.new(1, 0, 1, -40)
+-- ... adicione corner etc.
+
+local ScrollingFrame = Instance.new("ScrollingFrame")
+ScrollingFrame.Parent = CodeBox
+ScrollingFrame.Size = UDim2.new(1, 0, 1, 0)
+-- ...
+
+local UIGridLayout = Instance.new("UIGridLayout")
+UIGridLayout.Parent = ScrollingFrame
+-- ...
+
+local FunctionTemplate = Instance.new("Frame")
+-- ... (use o original)
 TopBar.Name = "TopBar"
 TopBar.Parent = Background
 TopBar.BackgroundColor3 = Color3.fromRGB(37, 35, 38)
@@ -1302,7 +1328,7 @@ function newRemote(type, name, args, remote, function_info, blocked, src, return
         if entry.log and entry.log.Log then
             local originalBg = entry.log.Log.BackgroundColor3
             entry.log.Log.BackgroundColor3 = Color3.fromRGB(100, 80, 220)
-            task.spawn(function()
+            spawn(function()
                 wait(0.15)
                 if entry.log and entry.log.Log then
                     entry.log.Log.BackgroundColor3 = originalBg
