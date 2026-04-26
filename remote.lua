@@ -1397,60 +1397,46 @@ end
 --- @param function_info string
 --- @param blocked any
 function newRemote(type, name, args, remote, function_info, blocked, src, returnValue)
-    local key = name .. ":" .. type
-    local now = tick()
-    
-    if groupedRemotes[key] then
-        -- Atualiza entrada existente
-        local entry = groupedRemotes[key]
-        entry.count = entry.count + 1
-        entry.lastFire = now
-        entry.args = args
-        entry.returnValue = returnValue
-        
-        -- Atualiza o contador no botão (se existir)
-        if entry.Log and entry.Log:FindFirstChild("CountLabel") then
-            entry.Log.CountLabel.Text = entry.count .. "x"
-        else
-            -- Se não tiver CountLabel (GUI antiga), tenta atualizar o texto do nome
-            if entry.Log and entry.Log.Text then
-                local currentText = entry.Log.Text.Text
-                if currentText:match("%(x%d+%)$") then
-                    currentText = currentText:gsub("%(x%d+%)$", "(x" .. entry.count .. ")")
-                else
-                    currentText = currentText .. " (x" .. entry.count .. ")"
-                end
-                entry.Log.Text.Text = currentText
-            end
-        end
-        
-        -- Efeito de destaque (piscar)
-        if entry.Log then
-            local originalColor = entry.Log.BackgroundColor3
-            entry.Log.BackgroundColor3 = Color3.fromRGB(100, 80, 220)
-            spawn(function()
-                wait(0.15)
-                if entry.Log then
-                    entry.Log.BackgroundColor3 = originalColor
-                end
-            end)
-        end
-        
-        -- Atualiza o código gerado se for o selecionado
-        schedule(function()
-            if selected and selected.Name == name and selected.Type == type then
-                entry.GenScript = genScript(remote, args)
-                if blocked then
-                    entry.GenScript = "-- BLOQUEADO PELO SIMPLESPY\n\n" .. entry.GenScript
-                end
-                if selected == entry then
-                    codebox:setRaw(entry.GenScript)
-                end
-            end
-        end)
-        return
-    end
-    
+	local remoteFrame = RemoteTemplate:Clone()
+	remoteFrame.Text.Text = string.sub(name, 1, 50)
+	remoteFrame.ColorBar.BackgroundColor3 = type == "event" and Color3.new(255, 242, 0) or Color3.fromRGB(99, 86, 245)
+	local id = Instance.new("IntValue")
+	id.Name = "ID"
+	id.Value = #logs + 1
+	id.Parent = remoteFrame
+	local weakRemoteTable = setmetatable({ remote = remote }, { __mode = "v" })
+	local log = {
+		Name = name,
+		Remote = weakRemoteTable,
+		Log = remoteFrame,
+		Blocked = blocked,
+		Source = src,
+		GenScript = "-- Generating, please wait... (click to reload)\n-- (If this message persists, the remote args are likely extremely long)",
+		ReturnValue = returnValue,
+		Func = function_info,
+	}
+	logs[#logs + 1] = log
+    log.GenScript = genScript(remote, args)
+	schedule(function()
+		log.GenScript = genScript(remote, args)
+		if blocked then
+			logs[#logs].GenScript = "-- THIS REMOTE WAS PREVENTED FROM FIRING THE SERVER BY SIMPLESPY\n\n"
+				.. logs[#logs].GenScript
+		end
+	end)
+	local connect = remoteFrame.Button.MouseButton1Click:Connect(function()
+		eventSelect(remoteFrame)
+	end)
+	if layoutOrderNum < 1 then
+		layoutOrderNum = 999999999
+	end
+	remoteFrame.LayoutOrder = layoutOrderNum
+	layoutOrderNum = layoutOrderNum - 1
+	remoteFrame.Parent = LogList
+	table.insert(remoteLogs, 1, { connect, remoteFrame })
+	clean()
+	updateRemoteCanvas()
+end
     -- Criar novo remote (código original adaptado)
     local remoteFrame = RemoteTemplate:Clone()
     remoteFrame.Text.Text = name
