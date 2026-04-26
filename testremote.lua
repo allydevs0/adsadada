@@ -33,7 +33,11 @@ function save_logs(path)
 	logs_count = 0
 end
 getgenv().abss = _G.data['CursorOffset'] -- the offset of the cursor had to make a global var so i can calculate the exact position
-
+-- No topo, antes de qualquer uso de _G.data
+_G.data = _G.data or {}
+_G.data.CursorOffset = _G.data.CursorOffset or 0
+_G.data.SaveDecompileLogs = _G.data.SaveDecompileLogs or false
+-- etc.
 if _G.data['SaveDecompileLogs'] then
 	warn('âš ï¸ - Saving decompile logs...')
 	local cur_time = tick()
