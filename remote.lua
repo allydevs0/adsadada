@@ -35,7 +35,7 @@ end
 getgenv().abss = _G.data['CursorOffset'] -- the offset of the cursor had to make a global var so i can calculate the exact position
 
 if _G.data['SaveDecompileLogs'] then
-	warn('⚠️ - Saving decompile logs...')
+	warn('?? - Saving decompile logs...')
 	local cur_time = tick()
 	for i,v in pairs(_G.data['PathToDump']) do
 		save_logs(v)
@@ -43,22 +43,22 @@ if _G.data['SaveDecompileLogs'] then
 	if game.Players.LocalPlayer.Character then
 	save_logs(game.Players.LocalPlayer.Character)
 	end
-	print('✅ - LocalScripts have been dumped! | time taken: ' .. tick() - cur_time .. ' seconds')
+	print('? - LocalScripts have been dumped! | time taken: ' .. tick() - cur_time .. ' seconds')
 end
-warn('⚠️ - Initializing RemoteHook/main.lua')
+warn('?? - Initializing RemoteHook/main.lua')
 loadstring(game:HttpGet('https://raw.githubusercontent.com/ScriptSkiddie69/RemoteHook/refs/heads/main/Installation.lua'))()
 local code = loadstring(readfile('RemoteHook//main.lua'))()
-warn('✅ - Initialized RemoteHook/main.lua')
+warn('? - Initialized RemoteHook/main.lua')
 
 if _G.data['SaveScanLogs'] then
-	warn('⚠️ - Saving scan logs...')
+	warn('?? - Saving scan logs...')
 	local cur_time = tick()
 	for _,scripts in ipairs(game:GetDescendants()) do
 		if scripts:IsA('LocalScript') then
 			writefile('SimpleSpyLite//ScanLogs//'.. game.PlaceId .. '//game.' .. scripts:GetFullName() .. '.txt', 'game.' .. scripts:GetFullName())
 		end
 	end
-	print('✅ - Scan logs has been saved! | time taken: ' .. tick() - cur_time .. ' seconds')
+	print('? - Scan logs has been saved! | time taken: ' .. tick() - cur_time .. ' seconds')
 end
 warn('Loading SimpleSpy v2.5 lite by osint boss')
 
@@ -72,8 +72,7 @@ local Highlight =
 
 ---- GENERATED (kinda sorta mostly) BY GUI to LUA ----
 
--- Instances:
-
+-- Instâncias (GUI moderna glassmorphism)
 local SimpleSpy2 = Instance.new("ScreenGui")
 local Background = Instance.new("Frame")
 local LeftPanel = Instance.new("Frame")
@@ -82,6 +81,8 @@ local UIListLayout = Instance.new("UIListLayout")
 local RemoteTemplate = Instance.new("Frame")
 local ColorBar = Instance.new("Frame")
 local Text = Instance.new("TextLabel")
+local CountLabel = Instance.new("TextLabel")
+local DirLabel = Instance.new("TextLabel")
 local Button = Instance.new("TextButton")
 local RightPanel = Instance.new("Frame")
 local CodeBox = Instance.new("Frame")
@@ -102,101 +103,154 @@ local ImageLabel_3 = Instance.new("ImageLabel")
 local ToolTip = Instance.new("Frame")
 local TextLabel = Instance.new("TextLabel")
 
---Properties:
-
+-- Propriedades: estilo moderno (glass, cantos arredondados)
 SimpleSpy2.Name = "SimpleSpy2"
 SimpleSpy2.ResetOnSpawn = false
+SimpleSpy2.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 Background.Name = "Background"
 Background.Parent = SimpleSpy2
-Background.BackgroundColor3 = Color3.new(1, 1, 1)
-Background.BackgroundTransparency = 1
+Background.BackgroundColor3 = Color3.fromRGB(18, 18, 26)
+Background.BackgroundTransparency = 0.15
+Background.BorderSizePixel = 0
+Background.ClipsDescendants = true
 Background.Position = UDim2.new(0, 500, 0, 200)
-Background.Size = UDim2.new(0, 450, 0, 268)
+Background.Size = UDim2.new(0, 520, 0, 420)
+Background.AutomaticSize = Enum.AutomaticSize.None
+
+local bgCorner = Instance.new("UICorner")
+bgCorner.CornerRadius = UDim.new(0, 20)
+bgCorner.Parent = Background
+
+local bgStroke = Instance.new("UIStroke")
+bgStroke.Color = Color3.fromRGB(80, 70, 150)
+bgStroke.Thickness = 1
+bgStroke.Transparency = 0.7
+bgStroke.Parent = Background
 
 LeftPanel.Name = "LeftPanel"
 LeftPanel.Parent = Background
-LeftPanel.BackgroundColor3 = Color3.fromRGB(53, 52, 55)
+LeftPanel.BackgroundColor3 = Color3.fromRGB(12, 12, 18)
+LeftPanel.BackgroundTransparency = 0.4
 LeftPanel.BorderSizePixel = 0
-LeftPanel.Position = UDim2.new(0, 0, 0, 19)
-LeftPanel.Size = UDim2.new(0, 131, 0, 249)
+LeftPanel.Position = UDim2.new(0, 0, 0, 32)
+LeftPanel.Size = UDim2.new(0, 160, 1, -32)
+
+local leftCorner = Instance.new("UICorner")
+leftCorner.CornerRadius = UDim.new(0, 12)
+leftCorner.Parent = LeftPanel
 
 LogList.Name = "LogList"
 LogList.Parent = LeftPanel
 LogList.Active = true
-LogList.BackgroundColor3 = Color3.new(1, 1, 1)
+LogList.BackgroundColor3 = Color3.new(1,1,1)
 LogList.BackgroundTransparency = 1
 LogList.BorderSizePixel = 0
-LogList.Position = UDim2.new(0, 0, 0, 9)
-LogList.Size = UDim2.new(0, 131, 0, 232)
-LogList.CanvasSize = UDim2.new(0, 0, 0, 0)
+LogList.Position = UDim2.new(0, 0, 0, 40)
+LogList.Size = UDim2.new(1, 0, 1, -40)
+LogList.CanvasSize = UDim2.new(0,0,0,0)
 LogList.ScrollBarThickness = 4
+LogList.ScrollBarImageColor3 = Color3.fromRGB(100, 80, 200)
 
 UIListLayout.Parent = LogList
 UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.Padding = UDim.new(0, 4)
 
 RemoteTemplate.Name = "RemoteTemplate"
 RemoteTemplate.Parent = LogList
-RemoteTemplate.BackgroundColor3 = Color3.new(1, 1, 1)
-RemoteTemplate.BackgroundTransparency = 1
-RemoteTemplate.Size = UDim2.new(0, 117, 0, 27)
+RemoteTemplate.BackgroundColor3 = Color3.fromRGB(30, 30, 42)
+RemoteTemplate.BackgroundTransparency = 0.2
+RemoteTemplate.BorderSizePixel = 0
+RemoteTemplate.Size = UDim2.new(0, 148, 0, 42)
+
+local templateCorner = Instance.new("UICorner")
+templateCorner.CornerRadius = UDim.new(0, 10)
+templateCorner.Parent = RemoteTemplate
 
 ColorBar.Name = "ColorBar"
 ColorBar.Parent = RemoteTemplate
-ColorBar.BackgroundColor3 = Color3.fromRGB(255, 242, 0)
+ColorBar.BackgroundColor3 = Color3.fromRGB(124, 94, 255)
 ColorBar.BorderSizePixel = 0
-ColorBar.Position = UDim2.new(0, 0, 0, 1)
-ColorBar.Size = UDim2.new(0, 7, 0, 18)
+ColorBar.Position = UDim2.new(0, 0, 0, 6)
+ColorBar.Size = UDim2.new(0, 4, 0, 30)
 ColorBar.ZIndex = 2
 
 Text.Name = "Text"
 Text.Parent = RemoteTemplate
-Text.BackgroundColor3 = Color3.new(1, 1, 1)
+Text.BackgroundColor3 = Color3.new(1,1,1)
 Text.BackgroundTransparency = 1
-Text.Position = UDim2.new(0, 12, 0, 1)
-Text.Size = UDim2.new(0, 105, 0, 18)
+Text.Position = UDim2.new(0, 14, 0, 6)
+Text.Size = UDim2.new(0, 100, 0, 20)
 Text.ZIndex = 2
-Text.Font = Enum.Font.SourceSans
-Text.Text = "TEXT"
-Text.TextColor3 = Color3.new(1, 1, 1)
-Text.TextSize = 14
+Text.Font = Enum.Font.GothamSemibold
+Text.Text = "Remote"
+Text.TextColor3 = Color3.fromRGB(230, 230, 245)
+Text.TextSize = 13
 Text.TextXAlignment = Enum.TextXAlignment.Left
-Text.TextWrapped = true
+Text.TextTruncate = Enum.TextTruncate.AtEnd
+
+CountLabel.Name = "CountLabel"
+CountLabel.Parent = RemoteTemplate
+CountLabel.BackgroundTransparency = 1
+CountLabel.Position = UDim2.new(1, -40, 0, 8)
+CountLabel.Size = UDim2.new(0, 34, 0, 16)
+CountLabel.Font = Enum.Font.GothamBlack
+CountLabel.Text = "1x"
+CountLabel.TextColor3 = Color3.fromRGB(200, 180, 255)
+CountLabel.TextSize = 11
+CountLabel.TextXAlignment = Enum.TextXAlignment.Right
+
+DirLabel.Name = "DirLabel"
+DirLabel.Parent = RemoteTemplate
+DirLabel.BackgroundTransparency = 1
+DirLabel.Position = UDim2.new(0, 5, 0, 22)
+DirLabel.Size = UDim2.new(0, 14, 0, 14)
+DirLabel.Font = Enum.Font.GothamBold
+DirLabel.Text = "↑"
+DirLabel.TextColor3 = Color3.fromRGB(124, 94, 255)
+DirLabel.TextSize = 12
+DirLabel.TextXAlignment = Enum.TextXAlignment.Center
 
 Button.Name = "Button"
 Button.Parent = RemoteTemplate
-Button.BackgroundColor3 = Color3.new(0, 0, 0)
-Button.BackgroundTransparency = 0.75
-Button.BorderColor3 = Color3.new(1, 1, 1)
-Button.Position = UDim2.new(0, 0, 0, 1)
-Button.Size = UDim2.new(0, 117, 0, 18)
+Button.BackgroundColor3 = Color3.new(0,0,0)
+Button.BackgroundTransparency = 0.85
+Button.Size = UDim2.new(1, 0, 1, 0)
+Button.ZIndex = 1
 Button.AutoButtonColor = false
-Button.Font = Enum.Font.SourceSans
 Button.Text = ""
-Button.TextColor3 = Color3.new(0, 0, 0)
-Button.TextSize = 14
 
 RightPanel.Name = "RightPanel"
 RightPanel.Parent = Background
-RightPanel.BackgroundColor3 = Color3.fromRGB(37, 36, 38)
+RightPanel.BackgroundColor3 = Color3.fromRGB(18, 18, 26)
+RightPanel.BackgroundTransparency = 0.3
 RightPanel.BorderSizePixel = 0
-RightPanel.Position = UDim2.new(0, 131, 0, 19)
-RightPanel.Size = UDim2.new(0, 319, 0, 249)
+RightPanel.Position = UDim2.new(0, 160, 0, 32)
+RightPanel.Size = UDim2.new(1, -160, 1, -32)
+
+local rightCorner = Instance.new("UICorner")
+rightCorner.CornerRadius = UDim.new(0, 12)
+rightCorner.Parent = RightPanel
 
 CodeBox.Name = "CodeBox"
 CodeBox.Parent = RightPanel
-CodeBox.BackgroundColor3 = Color3.new(0.0823529, 0.0745098, 0.0784314)
+CodeBox.BackgroundColor3 = Color3.fromRGB(10, 10, 16)
 CodeBox.BorderSizePixel = 0
-CodeBox.Size = UDim2.new(0, 319, 0, 119)
+CodeBox.Size = UDim2.new(1, 0, 1, -40)
+CodeBox.Position = UDim2.new(0, 0, 0, 0)
+
+local codeCorner = Instance.new("UICorner")
+codeCorner.CornerRadius = UDim.new(0, 8)
+codeCorner.Parent = CodeBox
 
 ScrollingFrame.Parent = RightPanel
 ScrollingFrame.Active = true
-ScrollingFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+ScrollingFrame.BackgroundColor3 = Color3.new(1,1,1)
 ScrollingFrame.BackgroundTransparency = 1
 ScrollingFrame.Position = UDim2.new(0, 0, 0.5, 0)
 ScrollingFrame.Size = UDim2.new(1, 0, 0.5, -9)
-ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+ScrollingFrame.CanvasSize = UDim2.new(0,0,0,0)
 ScrollingFrame.ScrollBarThickness = 4
 
 UIGridLayout.Parent = ScrollingFrame
@@ -207,13 +261,13 @@ UIGridLayout.CellSize = UDim2.new(0, 94, 0, 27)
 
 FunctionTemplate.Name = "FunctionTemplate"
 FunctionTemplate.Parent = ScrollingFrame
-FunctionTemplate.BackgroundColor3 = Color3.new(1, 1, 1)
+FunctionTemplate.BackgroundColor3 = Color3.new(1,1,1)
 FunctionTemplate.BackgroundTransparency = 1
 FunctionTemplate.Size = UDim2.new(0, 117, 0, 23)
 
 ColorBar_2.Name = "ColorBar"
 ColorBar_2.Parent = FunctionTemplate
-ColorBar_2.BackgroundColor3 = Color3.new(1, 1, 1)
+ColorBar_2.BackgroundColor3 = Color3.new(1,1,1)
 ColorBar_2.BorderSizePixel = 0
 ColorBar_2.Position = UDim2.new(0, 7, 0, 10)
 ColorBar_2.Size = UDim2.new(0, 7, 0, 18)
@@ -221,128 +275,131 @@ ColorBar_2.ZIndex = 3
 
 Text_2.Name = "Text"
 Text_2.Parent = FunctionTemplate
-Text_2.BackgroundColor3 = Color3.new(1, 1, 1)
+Text_2.BackgroundColor3 = Color3.new(1,1,1)
 Text_2.BackgroundTransparency = 1
 Text_2.Position = UDim2.new(0, 19, 0, 10)
 Text_2.Size = UDim2.new(0, 69, 0, 18)
 Text_2.ZIndex = 2
 Text_2.Font = Enum.Font.SourceSans
 Text_2.Text = "TEXT"
-Text_2.TextColor3 = Color3.new(1, 1, 1)
+Text_2.TextColor3 = Color3.new(1,1,1)
 Text_2.TextSize = 14
-Text_2.TextStrokeColor3 = Color3.new(0.145098, 0.141176, 0.14902)
 Text_2.TextXAlignment = Enum.TextXAlignment.Left
-Text_2.TextWrapped = true
 
 Button_2.Name = "Button"
 Button_2.Parent = FunctionTemplate
-Button_2.BackgroundColor3 = Color3.new(0, 0, 0)
-Button_2.BackgroundTransparency = 0.69999998807907
-Button_2.BorderColor3 = Color3.new(1, 1, 1)
+Button_2.BackgroundColor3 = Color3.new(0,0,0)
+Button_2.BackgroundTransparency = 0.7
+Button_2.BorderColor3 = Color3.new(1,1,1)
 Button_2.Position = UDim2.new(0, 7, 0, 10)
 Button_2.Size = UDim2.new(0, 80, 0, 18)
 Button_2.AutoButtonColor = false
 Button_2.Font = Enum.Font.SourceSans
 Button_2.Text = ""
-Button_2.TextColor3 = Color3.new(0, 0, 0)
+Button_2.TextColor3 = Color3.new(0,0,0)
 Button_2.TextSize = 14
 
 TopBar.Name = "TopBar"
 TopBar.Parent = Background
-TopBar.BackgroundColor3 = Color3.fromRGB(37, 35, 38)
+TopBar.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+TopBar.BackgroundTransparency = 0.3
 TopBar.BorderSizePixel = 0
-TopBar.Size = UDim2.new(0, 450, 0, 19)
+TopBar.Size = UDim2.new(1, 0, 0, 32)
+
+local topCorner = Instance.new("UICorner")
+topCorner.CornerRadius = UDim.new(0, 12)
+topCorner.Parent = TopBar
 
 Simple.Name = "Simple"
 Simple.Parent = TopBar
-Simple.BackgroundColor3 = Color3.new(1, 1, 1)
+Simple.BackgroundColor3 = Color3.new(1,1,1)
 Simple.AutoButtonColor = false
 Simple.BackgroundTransparency = 1
-Simple.Position = UDim2.new(0, 5, 0, 0)
-Simple.Size = UDim2.new(0, 57, 0, 18)
-Simple.Font = Enum.Font.SourceSansBold
-Simple.Text = "SimpleSpy lite - (fixed by osint boss)"
-Simple.TextColor3 = Color3.new(1, 1, 1)
-Simple.TextSize = 14
+Simple.Position = UDim2.new(0, 10, 0, 6)
+Simple.Size = UDim2.new(0, 200, 0, 20)
+Simple.Font = Enum.Font.GothamBold
+Simple.Text = "SimpleSpy · AntiSpam"
+Simple.TextColor3 = Color3.new(1,1,1)
+Simple.TextSize = 13
 Simple.TextXAlignment = Enum.TextXAlignment.Left
 
 CloseButton.Name = "CloseButton"
 CloseButton.Parent = TopBar
-CloseButton.BackgroundColor3 = Color3.new(0.145098, 0.141176, 0.14902)
+CloseButton.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
 CloseButton.BorderSizePixel = 0
-CloseButton.Position = UDim2.new(1, -19, 0, 0)
-CloseButton.Size = UDim2.new(0, 19, 0, 19)
+CloseButton.Position = UDim2.new(1, -32, 0, 6)
+CloseButton.Size = UDim2.new(0, 20, 0, 20)
 CloseButton.Font = Enum.Font.SourceSans
 CloseButton.Text = ""
-CloseButton.TextColor3 = Color3.new(0, 0, 0)
-CloseButton.TextSize = 14
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 6)
+closeCorner.Parent = CloseButton
 
 ImageLabel.Parent = CloseButton
-ImageLabel.BackgroundColor3 = Color3.new(1, 1, 1)
+ImageLabel.BackgroundColor3 = Color3.new(1,1,1)
 ImageLabel.BackgroundTransparency = 1
 ImageLabel.Position = UDim2.new(0, 5, 0, 5)
-ImageLabel.Size = UDim2.new(0, 9, 0, 9)
+ImageLabel.Size = UDim2.new(0, 10, 0, 10)
 ImageLabel.Image = "http://www.roblox.com/asset/?id=5597086202"
 
 MaximizeButton.Name = "MaximizeButton"
 MaximizeButton.Parent = TopBar
-MaximizeButton.BackgroundColor3 = Color3.new(0.145098, 0.141176, 0.14902)
+MaximizeButton.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
 MaximizeButton.BorderSizePixel = 0
-MaximizeButton.Position = UDim2.new(1, -38, 0, 0)
-MaximizeButton.Size = UDim2.new(0, 19, 0, 19)
-MaximizeButton.Font = Enum.Font.SourceSans
-MaximizeButton.Text = ""
-MaximizeButton.TextColor3 = Color3.new(0, 0, 0)
-MaximizeButton.TextSize = 14
+MaximizeButton.Position = UDim2.new(1, -58, 0, 6)
+MaximizeButton.Size = UDim2.new(0, 20, 0, 20)
+local maxCorner = Instance.new("UICorner")
+maxCorner.CornerRadius = UDim.new(0, 6)
+maxCorner.Parent = MaximizeButton
 
 ImageLabel_2.Parent = MaximizeButton
-ImageLabel_2.BackgroundColor3 = Color3.new(1, 1, 1)
+ImageLabel_2.BackgroundColor3 = Color3.new(1,1,1)
 ImageLabel_2.BackgroundTransparency = 1
 ImageLabel_2.Position = UDim2.new(0, 5, 0, 5)
-ImageLabel_2.Size = UDim2.new(0, 9, 0, 9)
+ImageLabel_2.Size = UDim2.new(0, 10, 0, 10)
 ImageLabel_2.Image = "http://www.roblox.com/asset/?id=5597108117"
 
 MinimizeButton.Name = "MinimizeButton"
 MinimizeButton.Parent = TopBar
-MinimizeButton.BackgroundColor3 = Color3.new(0.145098, 0.141176, 0.14902)
+MinimizeButton.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
 MinimizeButton.BorderSizePixel = 0
-MinimizeButton.Position = UDim2.new(1, -57, 0, 0)
-MinimizeButton.Size = UDim2.new(0, 19, 0, 19)
-MinimizeButton.Font = Enum.Font.SourceSans
-MinimizeButton.Text = ""
-MinimizeButton.TextColor3 = Color3.new(0, 0, 0)
-MinimizeButton.TextSize = 14
+MinimizeButton.Position = UDim2.new(1, -84, 0, 6)
+MinimizeButton.Size = UDim2.new(0, 20, 0, 20)
+local minCorner = Instance.new("UICorner")
+minCorner.CornerRadius = UDim.new(0, 6)
+minCorner.Parent = MinimizeButton
 
 ImageLabel_3.Parent = MinimizeButton
-ImageLabel_3.BackgroundColor3 = Color3.new(1, 1, 1)
+ImageLabel_3.BackgroundColor3 = Color3.new(1,1,1)
 ImageLabel_3.BackgroundTransparency = 1
 ImageLabel_3.Position = UDim2.new(0, 5, 0, 5)
-ImageLabel_3.Size = UDim2.new(0, 9, 0, 9)
+ImageLabel_3.Size = UDim2.new(0, 10, 0, 10)
 ImageLabel_3.Image = "http://www.roblox.com/asset/?id=5597105827"
 
 ToolTip.Name = "ToolTip"
 ToolTip.Parent = SimpleSpy2
 ToolTip.BackgroundColor3 = Color3.fromRGB(26, 26, 26)
 ToolTip.BackgroundTransparency = 0.1
-ToolTip.BorderColor3 = Color3.new(1, 1, 1)
+ToolTip.BorderColor3 = Color3.new(1,1,1)
 ToolTip.Size = UDim2.new(0, 200, 0, 50)
 ToolTip.ZIndex = 3
 ToolTip.Visible = false
 
 TextLabel.Parent = ToolTip
-TextLabel.BackgroundColor3 = Color3.new(1, 1, 1)
+TextLabel.BackgroundColor3 = Color3.new(1,1,1)
 TextLabel.BackgroundTransparency = 1
 TextLabel.Position = UDim2.new(0, 2, 0, 2)
 TextLabel.Size = UDim2.new(0, 196, 0, 46)
 TextLabel.ZIndex = 3
 TextLabel.Font = Enum.Font.SourceSans
-TextLabel.Text = "This is some slightly longer text."
-TextLabel.TextColor3 = Color3.new(1, 1, 1)
+TextLabel.Text = "Tooltip"
+TextLabel.TextColor3 = Color3.new(1,1,1)
 TextLabel.TextSize = 14
 TextLabel.TextWrapped = true
 TextLabel.TextXAlignment = Enum.TextXAlignment.Left
 TextLabel.TextYAlignment = Enum.TextYAlignment.Top
 
+-------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
 -- init
 local RunService = game:GetService("RunService")
@@ -368,6 +425,7 @@ local sideClosed = false
 local maximized = false
 --- The event logs to be read from
 local logs = {}
+local groupedRemotes = {}   -- key = nome..":"..tipo
 --- The event currently selected.Log (defaults to nil)
 local selected = nil
 --- The blacklist (can be a string name or the Remote Instance)
@@ -1173,26 +1231,26 @@ end
 
 --- Runs on MouseButton1Click of an event frame
 function eventSelect(frame)
-	if selected and selected.Log and selected.Log.Button then
-		TweenService
-			:Create(selected.Log.Button, TweenInfo.new(0.5), { BackgroundColor3 = Color3.fromRGB(0, 0, 0) })
-			:Play()
-		selected = nil
-	end
-	for _, v in pairs(logs) do
-		if frame == v.Log then
-			selected = v
-		end
-	end
-	if selected and selected.Log then
-		TweenService
-			:Create(frame.Button, TweenInfo.new(0.5), { BackgroundColor3 = Color3.fromRGB(92, 126, 229) })
-			:Play()
-		codebox:setRaw(selected.GenScript)
-	end
-	if sideClosed then
-		toggleSideTray()
-	end
+    if selected and selected.Log and selected.Log.Button then
+        TweenService:Create(selected.Log.Button, TweenInfo.new(0.3), { BackgroundColor3 = Color3.fromRGB(0,0,0) }):Play()
+    end
+    for _, v in pairs(logs) do
+        if frame == v.Log then
+            selected = v
+            break
+        end
+    end
+    if selected and selected.Log then
+        TweenService:Create(frame.Button, TweenInfo.new(0.3), { BackgroundColor3 = Color3.fromRGB(80, 70, 200) }):Play()
+        local header = "-- " .. selected.Name .. " (" .. selected.Type .. ") · disparado " .. selected.count .. " vezes\n"
+        if selected.lastFire then
+            header = header .. "-- Última chamada: " .. os.date("%H:%M:%S", selected.lastFire) .. "\n"
+        end
+        codebox:setRaw(header .. "\n" .. selected.GenScript)
+    end
+    if sideClosed then
+        toggleSideTray()
+    end
 end
 
 --- Updates the canvas size to fit the current amount of function buttons
@@ -1279,6 +1337,91 @@ end
 --- @param function_info string
 --- @param blocked any
 function newRemote(type, name, args, remote, function_info, blocked, src, returnValue)
+    local key = name .. ":" .. type
+    local now = tick()
+
+    if groupedRemotes[key] then
+        local entry = groupedRemotes[key]
+        entry.count = entry.count + 1
+        entry.lastFire = now
+        entry.args = args
+        entry.returnValue = returnValue
+
+        if entry.Log and entry.Log:FindFirstChild("CountLabel") then
+            entry.Log.CountLabel.Text = entry.count .. "x"
+        end
+        if entry.Log then
+            local originalBg = entry.Log.BackgroundColor3
+            entry.Log.BackgroundColor3 = Color3.fromRGB(100, 80, 220)
+            spawn(function()
+                wait(0.15)
+                if entry.Log then
+                    entry.Log.BackgroundColor3 = originalBg
+                end
+            end)
+        end
+        schedule(function()
+            if selected and selected.Name == name and selected.Type == type then
+                entry.GenScript = genScript(remote, args)
+                if blocked then
+                    entry.GenScript = "-- BLOQUEADO\n\n" .. entry.GenScript
+                end
+                if selected == entry then
+                    codebox:setRaw(entry.GenScript)
+                end
+            end
+        end)
+        return
+    end
+
+    local remoteFrame = RemoteTemplate:Clone()
+    remoteFrame.Text.Text = name
+    remoteFrame.ColorBar.BackgroundColor3 = (type == "event" and Color3.fromRGB(189,125,255))
+                                        or (type == "fn" and Color3.fromRGB(255,176,84))
+                                        or Color3.fromRGB(59,201,176)
+    local dir = (type == "event" or type == "fn") and "?" or "?"
+    remoteFrame.DirLabel.Text = dir
+    remoteFrame.DirLabel.TextColor3 = remoteFrame.ColorBar.BackgroundColor3
+    remoteFrame.CountLabel.Text = "1x"
+
+    local log = {
+        Name = name,
+        Type = type,
+        Remote = setmetatable({ remote = remote }, { __mode = "v" }),
+        Log = remoteFrame,
+        Blocked = blocked,
+        Source = src,
+        GenScript = genScript(remote, args),
+        ReturnValue = returnValue,
+        count = 1,
+        lastFire = now,
+        args = args,
+    }
+    if blocked then
+        log.GenScript = "-- BLOQUEADO\n\n" .. log.GenScript
+    end
+
+    logs[#logs + 1] = log
+    groupedRemotes[key] = log
+
+    remoteFrame.Button.MouseButton1Click:Connect(function()
+        eventSelect(remoteFrame)
+    end)
+
+    remoteFrame.LayoutOrder = 999999999 - #logs
+    remoteFrame.Parent = LogList
+    table.insert(remoteLogs, 1, { nil, remoteFrame })
+    clean()
+    updateRemoteCanvas()
+
+    remoteFrame.BackgroundTransparency = 0.5
+    spawn(function()
+        wait(0.05)
+        if remoteFrame then
+            remoteFrame.BackgroundTransparency = 0.2
+        end
+    end)
+end
 	local remoteFrame = RemoteTemplate:Clone()
 	remoteFrame.Text.Text = string.sub(name, 1, 50)
 	remoteFrame.ColorBar.BackgroundColor3 = type == "event" and Color3.new(255, 242, 0) or Color3.fromRGB(99, 86, 245)
@@ -1990,7 +2133,10 @@ function taskscheduler()
 end
 
 --- Handles remote logs
-
+function shutdown()
+    SimpleSpy2:Destroy()
+    _G.SimpleSpyExecuted = nil
+end
 -- main
 if not _G.SimpleSpyExecuted then
 	local succeeded, err = pcall(function()
@@ -2166,7 +2312,7 @@ end, function()
 		for _,v in ipairs(game.Players.LocalPlayer:GetDescendants()) do
             if v:IsA('LocalScript') then
                 local script = decompile(v)
-                
+
                 if code.traceline(script, selected.Name) then
                     warn('Traced a calling script! ' .. v:GetFullName())
 		setclipboard(script)
@@ -2177,7 +2323,7 @@ end, function()
         for _,v in ipairs(game.Players.LocalPlayer.Character:GetDescendants()) do
             if v:IsA('LocalScript') then
                 local script = decompile(v)
-                
+
                 if code.traceline(script, selected.Name) then
                     warn('Traced a calling script! ' .. v:GetFullName())
 		setclipboard(script)
@@ -2189,7 +2335,7 @@ end, function()
         --[[for _,v in ipairs(game.Players.LocalPlayer:GetDescendants()) do
             if v:IsA('LocalScript') then
                 local script = decompile(v)
-                
+
                 if code.traceline(script, selected.Remote.Name) then
                     warn('Traced a calling script! ' .. v:GetFullName())
 		setclipboard(script)
@@ -2200,7 +2346,7 @@ end, function()
         for _,v in ipairs(game.Players.LocalPlayer.Character:GetDescendants()) do
             if v:IsA('LocalScript') then
                 local script = decompile(v)
-                
+
                 if code.traceline(script, selected.Remote.Name) then
                     warn('Traced a calling script! ' .. v:GetFullName())
 		setclipboard(script)
@@ -2394,7 +2540,7 @@ end, function()
 end)
 
 
---// Hooks 
+--// Hooks
 warn('Defining RemoteHook...')
 warn('Setting up remote event listener...')
 for i,remote in ipairs(game:GetDescendants()) do
@@ -2409,7 +2555,7 @@ for i,remote in ipairs(game:GetDescendants()) do
             newRemote('event', rem.Name, value, rem, nil, false, "abc", false)
                 end
             end
-        
+
         })
     end
 end
@@ -2425,7 +2571,7 @@ game.DescendantAdded:Connect(function(remote)
             newRemote('event', rem.Name, value, rem, nil, false, "abc", false)
                 end
             end
-        
+
         })
     end
 end)
@@ -2438,7 +2584,7 @@ getgenv().http.request = function(...) -- intercept
     end
 	local _args = {
 		[1] = _spy,
-		[2] = [[http.request([1]) -- remove args and make [1] as a table ex: ( local response = {method = \"GET\"} ) and [2] http.request(response)]] 
+		[2] = [[http.request([1]) -- remove args and make [1] as a table ex: ( local response = {method = \"GET\"} ) and [2] http.request(response)]]
 	}
 	newRemote('function', 'req-log', _args, workspace, _spy, false, "abc", false)
 	_spy = {}
