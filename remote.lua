@@ -368,7 +368,6 @@ local sideClosed = false
 local maximized = false
 --- The event logs to be read from
 local logs = {}
-local groupedRemotes = {}   -- key = nome..":"..tipo
 --- The event currently selected.Log (defaults to nil)
 local selected = nil
 --- The blacklist (can be a string name or the Remote Instance)
@@ -461,7 +460,124 @@ function SimpleSpy:TableToVars(t)
 end
 
 --- Converts a value to a variable with the specified `variablename` (if nil/invalid then the name will be assigned automatically)
---- @param value any
+--- @param value anyfunction newRemote(type, name, args, remote, function_info, blocked, src, returnValue)
+    local key = name .. ":" .. type
+    local now = tick()
+    
+    if groupedRemotes[key] then
+        -- Atualiza entrada existente
+        local entry = groupedRemotes[key]
+        entry.count = entry.count + 1
+        entry.lastFire = now
+        entry.args = args
+        entry.returnValue = returnValue
+        
+        -- Atualiza o contador no botão (se existir)
+        if entry.Log and entry.Log:FindFirstChild("CountLabel") then
+            entry.Log.CountLabel.Text = entry.count .. "x"
+        else
+            -- Se não tiver CountLabel (GUI antiga), tenta atualizar o texto do nome
+            if entry.Log and entry.Log.Text then
+                local currentText = entry.Log.Text.Text
+                if currentText:match("%(x%d+%)$") then
+                    currentText = currentText:gsub("%(x%d+%)$", "(x" .. entry.count .. ")")
+                else
+                    currentText = currentText .. " (x" .. entry.count .. ")"
+                end
+                entry.Log.Text.Text = currentText
+            end
+        end
+        
+        -- Efeito de destaque (piscar)
+        if entry.Log then
+            local originalColor = entry.Log.BackgroundColor3
+            entry.Log.BackgroundColor3 = Color3.fromRGB(100, 80, 220)
+            spawn(function()
+                wait(0.15)
+                if entry.Log then
+                    entry.Log.BackgroundColor3 = originalColor
+                end
+            end)
+        end
+        
+        -- Atualiza o código gerado se for o selecionado
+        schedule(function()
+            if selected and selected.Name == name and selected.Type == type then
+                entry.GenScript = genScript(remote, args)
+                if blocked then
+                    entry.GenScript = "-- BLOQUEADO PELO SIMPLESPY\n\n" .. entry.GenScript
+                end
+                if selected == entry then
+                    codebox:setRaw(entry.GenScript)
+                end
+            end
+        end)
+        return
+    end
+    
+    -- Criar novo remote (código original adaptado)
+    local remoteFrame = RemoteTemplate:Clone()
+    remoteFrame.Text.Text = name
+    remoteFrame.ColorBar.BackgroundColor3 = type == "event" and Color3.new(255, 242, 0) or Color3.fromRGB(99, 86, 245)
+    
+    -- Adicionar contador visual (se a GUI tiver campo, senão anexa no nome)
+    local countLabel = remoteFrame:FindFirstChild("CountLabel")
+    if not countLabel then
+        -- Caso a GUI não tenha CountLabel, criamos um
+        countLabel = Instance.new("TextLabel")
+        countLabel.Name = "CountLabel"
+        countLabel.Parent = remoteFrame
+        countLabel.BackgroundTransparency = 1
+        countLabel.Position = UDim2.new(1, -35, 0, 6)
+        countLabel.Size = UDim2.new(0, 30, 0, 16)
+        countLabel.Font = Enum.Font.GothamBlack
+        countLabel.TextColor3 = Color3.fromRGB(200, 180, 255)
+        countLabel.TextSize = 11
+        countLabel.TextXAlignment = Enum.TextXAlignment.Right
+    end
+    countLabel.Text = "1x"
+    
+    local id = Instance.new("IntValue")
+    id.Name = "ID"
+    id.Value = #logs + 1
+    id.Parent = remoteFrame
+    
+    local weakRemoteTable = setmetatable({ remote = remote }, { __mode = "v" })
+    local log = {
+        Name = name,
+        Type = type,
+        Remote = weakRemoteTable,
+        Log = remoteFrame,
+        Blocked = blocked,
+        Source = src,
+        GenScript = genScript(remote, args),
+        ReturnValue = returnValue,
+        Func = function_info,
+        count = 1,
+        lastFire = now,
+        args = args,
+    }
+    if blocked then
+        log.GenScript = "-- BLOQUEADO PELO SIMPLESPY\n\n" .. log.GenScript
+    end
+    
+    logs[#logs + 1] = log
+    groupedRemotes[key] = log
+    
+    local connect = remoteFrame.Button.MouseButton1Click:Connect(function()
+        eventSelect(remoteFrame)
+    end)
+    
+    if layoutOrderNum < 1 then
+        layoutOrderNum = 999999999
+    end
+    remoteFrame.LayoutOrder = layoutOrderNum
+    layoutOrderNum = layoutOrderNum - 1
+    remoteFrame.Parent = LogList
+    table.insert(remoteLogs, 1, { connect, remoteFrame })
+    clean()
+    updateRemoteCanvas()
+end
 --- @return string
 function SimpleSpy:ValueToVar(value, variablename)
 	assert(variablename == nil or typeof(variablename) == "string", "string expected, got " .. typeof(variablename))
@@ -1174,30 +1290,26 @@ end
 
 --- Runs on MouseButton1Click of an event frame
 function eventSelect(frame)
-    if selected and selected.Log and selected.Log.Button then
-        TweenService:Create(selected.Log.Button, TweenInfo.new(0.5), { BackgroundColor3 = Color3.fromRGB(0, 0, 0) }):Play()
-        selected = nil
-    end
-    for _, v in pairs(logs) do
-        if frame == v.Log then
-            selected = v
-            break
-        end
-    end
-    if selected and selected.Log then
-        TweenService:Create(frame.Button, TweenInfo.new(0.5), { BackgroundColor3 = Color3.fromRGB(92, 126, 229) }):Play()
-        -- Adiciona cabeçalho com contador
-        local header = "-- " .. selected.Name .. " (" .. selected.Type .. ") · " .. selected.count .. " vez(es)\n"
-        if selected.lastFire then
-            header = header .. "-- Última chamada: " .. os.date("%H:%M:%S", selected.lastFire) .. "\n\n"
-        else
-            header = header .. "\n"
-        end
-        codebox:setRaw(header .. selected.GenScript)
-    end
-    if sideClosed then
-        toggleSideTray()
-    end
+	if selected and selected.Log and selected.Log.Button then
+		TweenService
+			:Create(selected.Log.Button, TweenInfo.new(0.5), { BackgroundColor3 = Color3.fromRGB(0, 0, 0) })
+			:Play()
+		selected = nil
+	end
+	for _, v in pairs(logs) do
+		if frame == v.Log then
+			selected = v
+		end
+	end
+	if selected and selected.Log then
+		TweenService
+			:Create(frame.Button, TweenInfo.new(0.5), { BackgroundColor3 = Color3.fromRGB(92, 126, 229) })
+			:Play()
+		codebox:setRaw(selected.GenScript)
+	end
+	if sideClosed then
+		toggleSideTray()
+	end
 end
 
 --- Updates the canvas size to fit the current amount of function buttons
@@ -1401,6 +1513,7 @@ function newRemote(type, name, args, remote, function_info, blocked, src, return
     clean()
     updateRemoteCanvas()
 end
+
 --- Generates a script from the provided arguments (first has to be remote path)
 function genScript(remote, args)
 	prevTables = {}
@@ -2172,20 +2285,7 @@ end, function()
 	setclipboard(codebox:getString())
 	TextLabel.Text = "Copied successfully!"
 end)
-newButton("Reset Group", function()
-    return "Limpa o agrupamento (zera contadores e remove todos os remotes)"
-end, function()
-    for _, v in pairs(LogList:GetChildren()) do
-        if v:IsA("Frame") and v ~= RemoteTemplate then
-            v:Destroy()
-        end
-    end
-    logs = {}
-    groupedRemotes = {}
-    selected = nil
-    codebox:setRaw("")
-    TextLabel.Text = "Agrupamento reiniciado"
-end)
+
 --- Copies the source script (that fired the remote)
 newButton("Copy Remote", function()
 	return "Click to copy the path of the remote"
