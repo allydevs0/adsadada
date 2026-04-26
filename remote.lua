@@ -378,6 +378,7 @@ local blocklist = {}
 local getNil = false
 --- Array of remotes (and original functions) connected to
 local connectedRemotes = {}
+local groupedRemotes = {}   -- key = nome..":"..tipo
 --- True = hookfunction, false = namecall
 local toggle = false
 local gm
